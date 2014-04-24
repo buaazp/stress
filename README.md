@@ -197,15 +197,13 @@ out.
 Input a different number on the bottom left corner input field
 to change the moving average window size (in data points).
 
-![Plot](https://dl.dropboxusercontent.com/u/83217940/plot.png)
-
 
 ## Usage (Library)
 ```go
 package main
 
 import (
-  vegeta "github.com/tsenart/vegeta/lib"
+  vegeta "github.com/buaazp/stress/lib"
   "time"
   "fmt"
 )
@@ -237,29 +235,4 @@ $ ulimit -u # processes / threads
 709
 ```
 Just pass a new number as the argument to change it.
-
-## Licence
-```
-The MIT License (MIT)
-
-Copyright (c) 2013, 2014 Tomás Senart
-
-Permission is hereby granted, free of charge, to any person obtaining a copy of
-this software and associated documentation files (the "Software"), to deal in
-the Software without restriction, including without limitation the rights to
-use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
-the Software, and to permit persons to whom the Software is furnished to do so,
-subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
-FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
-COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
-IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
-CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-```
-=======
 
