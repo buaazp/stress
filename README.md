@@ -1,3 +1,9 @@
+stress
+======
+
+A test tool to send random http GET/POST requests to server.
+Fork from vegeta.
+
 # Vegeta [![Build Status](https://drone.io/github.com/tsenart/vegeta/status.png?cache=0)](https://drone.io/github.com/tsenart/vegeta/latest)
 
 Vegeta is a versatile HTTP load testing tool built out of need to drill
@@ -255,3 +261,5 @@ COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
 IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ```
+=======
+
