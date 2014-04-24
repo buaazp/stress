@@ -10,8 +10,6 @@ Vegeta is a versatile HTTP load testing tool built out of need to drill
 HTTP services with a constant request rate.
 It can be used both as a command line utility and a library.
 
-![Vegeta](http://fc09.deviantart.net/fs49/i/2009/198/c/c/ssj2_vegeta_by_trunks24.jpg)
-
 ## Install
 ### Pre-compiled executables
 Get them [here](http://github.com/tsenart/vegeta/releases).
@@ -196,6 +194,8 @@ Click and drag to select a region to zoom into. Double click to zoom
 out.
 Input a different number on the bottom left corner input field
 to change the moving average window size (in data points).
+
+![Plot](https://dl.dropboxusercontent.com/u/83217940/plot.png)
 
 
 ## Usage (Library)
