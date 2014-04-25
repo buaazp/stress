@@ -1,4 +1,4 @@
-package vegeta
+package stress
 
 import (
 	"bytes"
@@ -33,7 +33,7 @@ func TestAttackRate(t *testing.T) {
 func TestAttackBody(t *testing.T) {
 	t.Parallel()
 
-	want := []byte("VEGETA!")
+	want := []byte("STRESS!")
 	server := httptest.NewServer(
 		http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			got, err := ioutil.ReadAll(r.Body)

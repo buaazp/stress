@@ -2,30 +2,30 @@ stress
 ======
 
 A test tool to send random http GET/POST requests to server.
-Fork from vegeta.
+Fork from [Vegeta](https://github.com/tsenart/vegeta).
 
-# Vegeta [![Build Status](https://drone.io/github.com/tsenart/vegeta/status.png?cache=0)](https://drone.io/github.com/tsenart/vegeta/latest)
-
-Vegeta is a versatile HTTP load testing tool built out of need to drill
+Stress is a versatile HTTP load testing tool built out of need to drill
 HTTP services with a constant request rate.
 It can be used both as a command line utility and a library.
 
 ## Install
 ### Pre-compiled executables
-Get them [here](http://github.com/tsenart/vegeta/releases).
+Get them [here](https://github.com/buaazp/stress/releases).
 
 ### Source
 You need go installed and `GOBIN` in your `PATH`. Once that is done, run the
 command:
-```shell
-$ go get github.com/tsenart/vegeta
-$ go install github.com/tsenart/vegeta
-```
+
+````
+$ go get github.com/buaazp/stress
+$ go install github.com/buaazp/stress
+````
 
 ## Usage manual
-```shell
-$ vegeta -h
-Usage: vegeta [globals] <command> [options]
+
+````
+$ stress -h
+Usage: stress [globals] <command> [options]
 
 attack command:
   -body="": Requests body file
@@ -47,20 +47,22 @@ global flags:
   -cpus=8 Number of CPUs to use
 
 examples:
-  echo "GET http://localhost/" | vegeta attack -duration=5s | tee results.bin | vegeta report
-  vegeta attack -targets=targets.txt > results.bin
-  vegeta report -input=results.bin -reporter=json > metrics.json
-  cat results.bin | vegeta report -reporter=plot > plot.html
-```
+  echo "GET HOST:ww2.sinaimg.cn resize-type:crop.100.100.200.200.100 http://127.0.0.1:8088/bmiddle/50caec1agw1ef9myz5zhoj21ck0yggv6.jpg" | stress attack -duration=5s -rate=100 | tee results.bin | stress report
+  echo "POST http://127.0.0.1:4869/upload form:5f189.jpeg" | stress attack -duration=5s -rate=1 | tee results.bin | stress report
+  stress attack -targets=targets.txt > results.bin
+  stress report -input=results.bin -reporter=json > metrics.json
+  cat results.bin | stress report -reporter=plot > plot.html
+````
 
 #### -cpus
 Specifies the number of CPUs to be used internally.
 It defaults to the amount of CPUs available in the system.
 
 ### attack
-```shell
-$ vegeta attack -h
-Usage of vegeta attack:
+
+````
+$ stress attack -h
+Usage of stress attack:
   -body="": Requests body file
   -duration=10s: Duration of the test
   -header=: Request header
@@ -70,7 +72,7 @@ Usage of vegeta attack:
   -redirects=10: Number of redirects to follow
   -targets="stdin": Targets file
   -timeout=0: Requests timeout
-```
+````
 
 #### -body
 Specifies the file whose content will be set as the body of every request.
@@ -108,28 +110,33 @@ default is 10.
 #### -targets
 Specifies the attack targets in a line separated file, defaulting to stdin.
 The format should be as follows.
-```
+
+````
+Method [Header_key:Header_value ...] Url [[form:]BodyFile]
 GET http://goku:9090/path/to/dragon?item=balls
 GET http://user:password@goku:9090/path/to
 HEAD http://goku:9090/path/to/success
+POST http://127.0.0.1:4869/upload form:5f189.jpeg
+GET http://127.0.0.1:4869/a87665d54a8c0dcaab04fa88b323eba1
+GET HOST:ww2.sinaimg.cn resize-type:crop.100.100.200.200.100 http://127.0.0.1:8088/bmiddle/50caec1agw1ef9myz5zhoj21ck0yggv6.jpg
 ...
-```
+````
 
 #### -timeout
 Specifies the timeout for each request. The default is 0 which disables
 timeouts.
 ### report
-```
-$ vegeta report -h
-Usage of vegeta report:
+````
+$ stress report -h
+Usage of stress report:
   -input="stdin": Input files (comma separated)
   -output="stdout": Output file
   -reporter="text": Reporter [text, json, plot]
-```
+````
 
 #### -input
 Specifies the input files to generate the report of, defaulting to stdin.
-These are the output of vegeta attack. You can specify more than one (comma
+These are the output of stress attack. You can specify more than one (comma
 separated) and they will be merged and sorted before being used by the
 reports.
 
@@ -140,7 +147,7 @@ Specifies the output file to which the report will be written to.
 Specifies the kind of report to be generated. It defaults to text.
 
 ##### text
-```
+````
 Requests      [total]                   1200
 Duration      [total]                   1.998307684s
 Latencies     [mean, 50, 95, 99, max]   223.340085ms, 240.12234ms, 326.913687ms, 416.537743ms, 7.788103259s
@@ -155,10 +162,10 @@ Get http://localhost:6060: dial tcp 127.0.0.1:6060: connection reset by peer
 Get http://localhost:6060: write tcp 127.0.0.1:6060: broken pipe
 Get http://localhost:6060: net/http: transport closed before response was received
 Get http://localhost:6060: http: can't write HTTP request on broken connection
-```
+````
 
 ##### json
-```json
+````
 {
   "latencies": {
     "mean": 9093653647,
@@ -186,7 +193,7 @@ Get http://localhost:6060: http: can't write HTTP request on broken connection
     "Get http://localhost:6060: dial tcp 127.0.0.1:6060: operation timed out"
   ]
 }
-```
+````
 ##### plot
 Generates an HTML5 page with an interactive plot based on
 [Dygraphs](http://dygraphs.com).
@@ -203,18 +210,18 @@ to change the moving average window size (in data points).
 package main
 
 import (
-  vegeta "github.com/buaazp/stress/lib"
+  stress "github.com/buaazp/stress/lib"
   "time"
   "fmt"
 )
 
 func main() {
-  targets, _ := vegeta.NewTargets([]string{"GET http://localhost:9100/"})
+  targets, _ := stress.NewTargets([]string{"GET http://localhost:9100/"})
   rate := uint64(100) // per second
   duration := 4 * time.Second
 
-  results := vegeta.Attack(targets, rate, duration)
-  metrics := vegeta.NewMetrics(results)
+  results := stress.Attack(targets, rate, duration)
+  metrics := stress.NewMetrics(results)
 
   fmt.Printf("Mean latency: %s", metrics.Latencies.Mean)
 }
@@ -228,11 +235,12 @@ have system resource limits being reached which ought to be tuned for
 the process execution. The important limits for us are file descriptors
 and processes. On a UNIX system you can get and set the current
 soft-limit values for a user.
-```shell
+
+````
 $ ulimit -n # file descriptors
 2560
 $ ulimit -u # processes / threads
 709
-```
+````
 Just pass a new number as the argument to change it.
 

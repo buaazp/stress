@@ -10,11 +10,11 @@ import (
 	"strings"
 	"time"
 
-	vegeta "github.com/buaazp/stress/lib"
+	stress "github.com/buaazp/stress/lib"
 )
 
 func attackCmd() command {
-	fs := flag.NewFlagSet("vegeta attack", flag.ExitOnError)
+	fs := flag.NewFlagSet("stress attack", flag.ExitOnError)
 	opts := &attackOpts{headers: headers{http.Header{}}}
 
 	fs.StringVar(&opts.targetsf, "targets", "stdin", "Targets file")
@@ -76,7 +76,7 @@ func attack(opts *attackOpts) error {
 		}
 	}
 
-	targets, err := vegeta.NewTargetsFrom(in, body, opts.headers.Header)
+	targets, err := stress.NewTargetsFrom(in, body, opts.headers.Header)
 	if err != nil {
 		return fmt.Errorf(errTargetsFilePrefix+"(%s): %s", opts.targetsf, err)
 	}
@@ -96,7 +96,7 @@ func attack(opts *attackOpts) error {
 	}
 	defer out.Close()
 
-	attacker := vegeta.NewAttacker()
+	attacker := stress.NewAttacker()
 	attacker.SetRedirects(opts.redirects)
 
 	if opts.timeout > 0 {
@@ -104,7 +104,7 @@ func attack(opts *attackOpts) error {
 	}
 
 	log.Printf(
-		"Vegeta is attacking %d targets in %s order for %s...\n",
+		"Stress is attacking %d targets in %s order for %s...\n",
 		len(targets),
 		opts.ordering,
 		opts.duration,

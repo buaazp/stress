@@ -1,2 +1,4 @@
-HEAD http://lolcathost:9194
+POST http://127.0.0.1:4869/upload form:5f189.jpeg
+GET http://127.0.0.1:4869/a87665d54a8c0dcaab04fa88b323eba1
+GET HOST:ww2.sinaimg.cn resize-type:crop.100.100.200.200.100 http://127.0.0.1:8088/bmiddle/50caec1agw1ef9myz5zhoj21ck0yggv6.jpg
 

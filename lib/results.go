@@ -1,4 +1,4 @@
-package vegeta
+package stress
 
 import (
 	"encoding/gob"

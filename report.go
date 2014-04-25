@@ -5,11 +5,11 @@ import (
 	"log"
 	"strings"
 
-	vegeta "github.com/buaazp/stress/lib"
+	stress "github.com/buaazp/stress/lib"
 )
 
 func reportCmd() command {
-	fs := flag.NewFlagSet("vegeta report", flag.ExitOnError)
+	fs := flag.NewFlagSet("stress report", flag.ExitOnError)
 	opts := &reportOpts{}
 
 	fs.StringVar(&opts.reporter, "reporter", "text", "Reporter [text, json, plot]")
@@ -35,17 +35,17 @@ func report(opts *reportOpts) error {
 	rep, ok := reporters[opts.reporter]
 	if !ok {
 		log.Println("Reporter provided is not supported. Using text")
-		rep = vegeta.ReportText
+		rep = stress.ReportText
 	}
 
-	var all vegeta.Results
+	var all stress.Results
 	for _, input := range strings.Split(opts.inputf, ",") {
 		in, err := file(input, false)
 		if err != nil {
 			return err
 		}
 
-		var results vegeta.Results
+		var results stress.Results
 		if err = results.Decode(in); err != nil {
 			return err
 		}
@@ -70,8 +70,8 @@ func report(opts *reportOpts) error {
 	return err
 }
 
-var reporters = map[string]vegeta.Reporter{
-	"text": vegeta.ReportText,
-	"json": vegeta.ReportJSON,
-	"plot": vegeta.ReportPlot,
+var reporters = map[string]stress.Reporter{
+	"text": stress.ReportText,
+	"json": stress.ReportJSON,
+	"plot": stress.ReportPlot,
 }

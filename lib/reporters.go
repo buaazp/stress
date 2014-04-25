@@ -1,4 +1,4 @@
-package vegeta
+package stress
 
 import (
 	"bytes"
@@ -73,11 +73,11 @@ func ReportPlot(results []Result) ([]byte, error) {
 const plotsTemplate = `<!doctype>
 <html>
 <head>
-  <title>Vegeta Plots</title>
+  <title>Stress Plots</title>
 </head>
 <body>
   <div id="latencies" style="font-family: Courier; width: 100%%; height: 600px"></div>
-  <a href="#" download="vegetaplot.png" onclick="this.href = document.getElementsByTagName('canvas')[0].toDataURL('image/png').replace(/^data:image\/[^;]/, 'data:application/octet-stream')">Download as PNG</a>
+  <a href="#" download="stressplot.png" onclick="this.href = document.getElementsByTagName('canvas')[0].toDataURL('image/png').replace(/^data:image\/[^;]/, 'data:application/octet-stream')">Download as PNG</a>
   <script>
 	%s
   </script>
@@ -86,7 +86,7 @@ const plotsTemplate = `<!doctype>
     document.getElementById("latencies"),
     [%s],
     {
-      title: 'Vegeta Plot',
+      title: 'Stress Plot',
       labels: ['Seconds', 'ERR', 'OK'],
       ylabel: 'Latency (ms)',
       xlabel: 'Seconds elapsed',

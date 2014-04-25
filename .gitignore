@@ -21,9 +21,9 @@ _testmain.go
 
 *.exe
 
-vegeta
-vegeta.test
+stress
+stress.test
 targets.txt
-vegeta-*.tar.gz
+stress-*.tar.gz
 lib/lib.test
 *.test
