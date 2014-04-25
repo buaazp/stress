@@ -48,7 +48,7 @@ global flags:
 
 examples:
   echo "GET HOST:ww2.sinaimg.cn resize-type:crop.100.100.200.200.100 http://127.0.0.1:8088/bmiddle/50caec1agw1ef9myz5zhoj21ck0yggv6.jpg" | stress attack -duration=5s -rate=100 | tee results.bin | stress report
-  echo "POST http://127.0.0.1:4869/upload form:5f189.jpeg" | stress attack -duration=5s -rate=1 | tee results.bin | stress report
+  echo "POST http://127.0.0.1:12345/ form:filename:5f189.jpeg" | stress attack -duration=5s -rate=1 | tee results.bin | stress report
   stress attack -targets=targets.txt > results.bin
   stress report -input=results.bin -reporter=json > metrics.json
   cat results.bin | stress report -reporter=plot > plot.html
@@ -112,11 +112,12 @@ Specifies the attack targets in a line separated file, defaulting to stdin.
 The format should be as follows.
 
 ````
-Method [Header_key:Header_value ...] Url [[form:]BodyFile]
+Method [Header_key:Header_value ...] Url [[form:[filekey:]]BodyFile]
 GET http://goku:9090/path/to/dragon?item=balls
 GET http://user:password@goku:9090/path/to
 HEAD http://goku:9090/path/to/success
 POST http://127.0.0.1:4869/upload form:5f189.jpeg
+POST http://127.0.0.1:12345/ form:filename:5f189.jpeg
 GET http://127.0.0.1:4869/a87665d54a8c0dcaab04fa88b323eba1
 GET HOST:ww2.sinaimg.cn resize-type:crop.100.100.200.200.100 http://127.0.0.1:8088/bmiddle/50caec1agw1ef9myz5zhoj21ck0yggv6.jpg
 ...

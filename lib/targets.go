@@ -33,11 +33,17 @@ func (t *Target) Request() (*http.Request, error) {
 			buf := &bytes.Buffer{}
 			w := multipart.NewWriter(buf)
 			kv := strings.Split(t.File, ":")
-			if len(kv) != 2 {
+			var filekey, filename string
+			if len(kv) == 2 {
+				filekey = "filename"
+				filename = kv[1]
+			} else if len(kv) == 3 {
+				filekey = kv[1]
+				filename = kv[2]
+			} else {
 				return nil, fmt.Errorf("Form file: "+"(%s): illegal", t.File)
 			}
-			filename := kv[1]
-			fw, err := w.CreateFormFile("file", filename)
+			fw, err := w.CreateFormFile(filekey, filename)
 			if err != nil {
 				//fmt.Println("fail CreateFormFile")
 				return nil, err
@@ -81,6 +87,7 @@ func (t *Target) Request() (*http.Request, error) {
 		req.Header[k] = make([]string, len(vs))
 		copy(req.Header[k], vs)
 	}
+	req.Header.Set("User-Agent", "stress 1.0")
 	if host := req.Header.Get("Host"); host != "" {
 		req.Host = host
 	}
