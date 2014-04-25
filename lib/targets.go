@@ -67,6 +67,8 @@ func (t *Target) Request() (*http.Request, error) {
 				return nil, fmt.Errorf("Post file: "+"(%s): %s", t.File, err)
 			}
 			req, err = http.NewRequest(t.Method, t.URL, bytes.NewBuffer(body))
+			content_len := len(body)
+			req.Header.Set("Content-Length", fmt.Sprint(content_len))
 		}
 	} else {
 		req, err = http.NewRequest(t.Method, t.URL, bytes.NewBuffer(t.Body))
