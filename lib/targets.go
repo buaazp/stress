@@ -35,7 +35,7 @@ func (t *Target) Request() (*http.Request, error) {
 			kv := strings.Split(t.File, ":")
 			var filekey, filename string
 			if len(kv) == 2 {
-				filekey = "filename"
+				filekey = "file"
 				filename = kv[1]
 			} else if len(kv) == 3 {
 				filekey = kv[1]

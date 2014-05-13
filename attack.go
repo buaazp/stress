@@ -23,7 +23,9 @@ func attackCmd() command {
 	fs.StringVar(&opts.ordering, "ordering", "random", "Attack ordering [sequential, random]")
 	fs.DurationVar(&opts.duration, "duration", 10*time.Second, "Duration of the test")
 	fs.DurationVar(&opts.timeout, "timeout", 0, "Requests timeout")
-	fs.Uint64Var(&opts.rate, "rate", 50, "Requests per second")
+	fs.Uint64Var(&opts.rate, "rate", 0, "Requests per second")
+	fs.Uint64Var(&opts.concurrency, "c", 0, "Concurrency level")
+	fs.Uint64Var(&opts.number, "n", 1000, "Requests number")
 	fs.IntVar(&opts.redirects, "redirects", 10, "Number of redirects to follow")
 	fs.Var(&opts.headers, "header", "Request header")
 
@@ -35,26 +37,34 @@ func attackCmd() command {
 
 // attackOpts aggregates the attack function command options
 type attackOpts struct {
-	targetsf  string
-	outputf   string
-	bodyf     string
-	ordering  string
-	duration  time.Duration
-	timeout   time.Duration
-	rate      uint64
-	redirects int
-	headers   headers
+	targetsf    string
+	outputf     string
+	bodyf       string
+	ordering    string
+	duration    time.Duration
+	timeout     time.Duration
+	rate        uint64
+	concurrency uint64
+	number      uint64
+	redirects   int
+	headers     headers
 }
 
 // attack validates the attack arguments, sets up the
 // required resources, launches the attack and writes the results
 func attack(opts *attackOpts) error {
-	if opts.rate == 0 {
-		return fmt.Errorf(errRatePrefix + "can't be zero")
+	if opts.rate == 0 && opts.concurrency == 0 {
+		return fmt.Errorf(errRatePrefix + "or " + errConcurrencyPrefix + "can't be zero")
+	} else if opts.rate != 0 && opts.concurrency != 0 {
+		return fmt.Errorf(errRatePrefix + "is conflict with " + errConcurrencyPrefix)
 	}
 
-	if opts.duration == 0 {
+	if opts.rate != 0 && opts.duration == 0 {
 		return fmt.Errorf(errDurationPrefix + "can't be zero")
+	}
+
+	if opts.concurrency != 0 && opts.number == 0 {
+		return fmt.Errorf(errNumberPrefix + "can't be zero")
 	}
 
 	in, err := file(opts.targetsf, false)
@@ -103,13 +113,26 @@ func attack(opts *attackOpts) error {
 		attacker.SetTimeout(opts.timeout)
 	}
 
-	log.Printf(
-		"Stress is attacking %d targets in %s order for %s...\n",
-		len(targets),
-		opts.ordering,
-		opts.duration,
-	)
-	results := attacker.Attack(targets, opts.rate, opts.duration)
+	var results stress.Results
+	if opts.rate != 0 {
+		log.Printf(
+			"Stress is attacking %d targets in %s order and %d rate for %s...\n",
+			len(targets),
+			opts.ordering,
+			opts.rate,
+			opts.duration,
+		)
+		results = attacker.AttackRate(targets, opts.rate, opts.duration)
+	} else if opts.concurrency != 0 {
+		log.Printf(
+			"Stress is attacking %d targets in %s order and %d concurrency level for %d times...\n",
+			len(targets),
+			opts.ordering,
+			opts.concurrency,
+			opts.number,
+		)
+		results = attacker.AttackConcy(targets, opts.concurrency, opts.number)
+	}
 
 	log.Printf("Done! Writing results to '%s'...", opts.outputf)
 	return results.Encode(out)
@@ -117,6 +140,8 @@ func attack(opts *attackOpts) error {
 
 const (
 	errRatePrefix        = "Rate: "
+	errConcurrencyPrefix = "Concurrency Level: "
+	errNumberPrefix      = "Number: "
 	errDurationPrefix    = "Duration: "
 	errOutputFilePrefix  = "Output file: "
 	errTargetsFilePrefix = "Targets file: "
