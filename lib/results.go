@@ -1,7 +1,7 @@
 package stress
 
 import (
-	"encoding/gob"
+	"encoding/json"
 	"io"
 	"sort"
 	"time"
@@ -25,13 +25,25 @@ type Results []Result
 // Encode encodes the results and writes it to an io.Writer
 // returning an error in case of failure
 func (r Results) Encode(out io.Writer) error {
-	return gob.NewEncoder(out).Encode(r)
+	/*
+		for index, result := range r {
+			_, err := fmt.Fprintf(out,
+				"{id:%d code:%d timestamp:%s latency:%s bytesout:%d bytesin:%d error:%s}\n", index, result.Code, result.Timestamp.String(), result.Latency.String(), result.BytesOut, result.BytesIn, result.Error)
+			if err != nil {
+				break
+				return err
+			}
+		}
+		return nil
+	*/
+	//return gob.NewEncoder(out).Encode(r)
+	return json.NewEncoder(out).Encode(r)
 }
 
 // Decode reads data from an io.Reader and decodes it into a Results struct
 // returning an error in case of failure
 func (r *Results) Decode(in io.Reader) error {
-	return gob.NewDecoder(in).Decode(r)
+	return json.NewDecoder(in).Decode(r)
 }
 
 // Sort sorts Results by Timestamp in ascending order and returns

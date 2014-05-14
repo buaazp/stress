@@ -114,9 +114,7 @@ func (a Attacker) AttackConcy(tgts Targets, concurrency uint64, number uint64) R
 	}
 	results := make(Results, 0, number)
 	for i = 0; i < concurrency; i++ {
-		for _, res := range <-retsc {
-			results = append(results, res)
-		}
+		results = append(results, <-retsc...)
 	}
 	return results.Sort()
 }

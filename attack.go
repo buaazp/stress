@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
 	"strings"
 	"time"
 
@@ -18,7 +19,7 @@ func attackCmd() command {
 	opts := &attackOpts{headers: headers{http.Header{}}}
 
 	fs.StringVar(&opts.targetsf, "targets", "stdin", "Targets file")
-	fs.StringVar(&opts.outputf, "output", "stdout", "Output file")
+	fs.StringVar(&opts.outputf, "output", "result.json", "Output file")
 	fs.StringVar(&opts.bodyf, "body", "", "Requests body file")
 	fs.StringVar(&opts.ordering, "ordering", "random", "Attack ordering [sequential, random]")
 	fs.DurationVar(&opts.duration, "duration", 10*time.Second, "Duration of the test")
@@ -41,9 +42,9 @@ type attackOpts struct {
 	outputf     string
 	bodyf       string
 	ordering    string
-	duration    time.Duration
 	timeout     time.Duration
 	rate        uint64
+	duration    time.Duration
 	concurrency uint64
 	number      uint64
 	redirects   int
@@ -135,14 +136,26 @@ func attack(opts *attackOpts) error {
 	}
 
 	log.Printf("Done! Writing results to '%s'...", opts.outputf)
-	return results.Encode(out)
+	err = results.Encode(out)
+	if err != nil {
+		return err
+	}
+
+	data, err := stress.ReportText(results)
+	if err != nil {
+		return err
+	}
+
+	_, err = os.Stdout.Write(data)
+
+	return err
 }
 
 const (
 	errRatePrefix        = "Rate: "
+	errDurationPrefix    = "Duration: "
 	errConcurrencyPrefix = "Concurrency Level: "
 	errNumberPrefix      = "Number: "
-	errDurationPrefix    = "Duration: "
 	errOutputFilePrefix  = "Output file: "
 	errTargetsFilePrefix = "Targets file: "
 	errBodyFilePrefix    = "Body file: "
