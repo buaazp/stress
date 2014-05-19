@@ -24,24 +24,8 @@ $ go install github.com/buaazp/stress
 ## Usage manual
 
 ````
-$ stress -h
+➜ stress git:(master) ✗ stress -h
 Usage: stress [globals] <command> [options]
-
-attack command:
-  -body="": Requests body file
-  -duration=10s: Duration of the test
-  -header=: Request header
-  -ordering="random": Attack ordering [sequential, random]
-  -output="stdout": Output file
-  -rate=50: Requests per second
-  -redirects=10: Number of redirects to follow
-  -targets="stdin": Targets file
-  -timeout=0: Requests timeout
-
-report command:
-  -input="stdin": Input files (comma separated)
-  -output="stdout": Output file
-  -reporter="text": Reporter [text, json, plot]
 
 global flags:
   -cpus=8 Number of CPUs to use
@@ -61,21 +45,25 @@ It defaults to the amount of CPUs available in the system.
 ### attack
 
 ````
-$ stress attack -h
+➜ stress git:(master) ✗ stress attack -h
 Usage of stress attack:
   -body="": Requests body file
+  -c=10: Concurrency level
   -duration=10s: Duration of the test
   -header=: Request header
+  -n=1000: Requests number
   -ordering="random": Attack ordering [sequential, random]
-  -output="stdout": Output file
+  -output="result.json": Output file
   -rate=50: Requests per second
   -redirects=10: Number of redirects to follow
   -targets="stdin": Targets file
   -timeout=0: Requests timeout
 ````
 
-#### -body
-Specifies the file whose content will be set as the body of every request.
+#### -rate
+Specifies the requests per second rate to issue against
+the targets. The actual request rate can vary slightly due to things like
+garbage collection, but overall it should stay very close to the specified.
 
 #### -duration
 Specifies the amount of time to issue request to the targets.
@@ -83,9 +71,34 @@ The internal concurrency structure's setup has this value as a variable.
 The actual run time of the test can be longer than specified due to the
 responses delay.
 
+#### -c
+Specifies the concurrency level of attack. Concurrency level `-c` is conflict with `-rate`. You can't use them both in one stress test.
+
+#### -n
+Specifies the requests' number in one stress test. Use `-c` and `-n` to control amount of stress. Equal to use `-rate` and `-duration`.
+
+#### -targets
+Specifies the attack targets in a line separated file, defaulting to stdin.
+The format should be as follows.
+
+````
+GET [Header_key:Header_value ...] Url [md5:response_body_md5_to_match]
+POST [Header_key:Header_value ...] Url [[form:[filekey:]]BodyFile]
+GET http://user:password@goku:9090/path/to
+HEAD http://goku:9090/path/to/success
+POST http://127.0.0.1:4869/upload form:5f189.jpeg
+POST http://127.0.0.1:12345/ form:filename:5f189.jpeg
+GET HOST:ww2.sinaimg.cn resize-type:crop.100.100.200.200.100 http://127.0.0.1:8088/bmiddle/50caec1agw1ef9myz5zhoj21ck0yggv6.jpg
+GET http://127.0.0.1:4869/a.jpeg md5:5f189d8ec57f5a5a0d3dcba47fa797e2
+...
+````
+
 #### -header
 Specifies a request header to be used in all targets defined.
 You can specify as many as needed by repeating the flag.
+
+#### -body
+Specifies the file whose content will be set as the body of every request.
 
 #### -ordering
 Specifies the ordering of target attack. The default is `random` and
@@ -98,37 +111,17 @@ do.
 Specifies the output file to which the binary results will be written
 to. Made to be piped to the report command input. Defaults to stdout.
 
-####  -rate
-Specifies the requests per second rate to issue against
-the targets. The actual request rate can vary slightly due to things like
-garbage collection, but overall it should stay very close to the specified.
-
 #### -redirects
 Specifies the max number of redirects followed on each request. The
 default is 10.
 
-#### -targets
-Specifies the attack targets in a line separated file, defaulting to stdin.
-The format should be as follows.
-
-````
-Method [Header_key:Header_value ...] Url [[form:[filekey:]]BodyFile]
-GET http://goku:9090/path/to/dragon?item=balls
-GET http://user:password@goku:9090/path/to
-HEAD http://goku:9090/path/to/success
-POST http://127.0.0.1:4869/upload form:5f189.jpeg
-POST http://127.0.0.1:12345/ form:filename:5f189.jpeg
-GET http://127.0.0.1:4869/a87665d54a8c0dcaab04fa88b323eba1
-GET HOST:ww2.sinaimg.cn resize-type:crop.100.100.200.200.100 http://127.0.0.1:8088/bmiddle/50caec1agw1ef9myz5zhoj21ck0yggv6.jpg
-...
-````
-
 #### -timeout
 Specifies the timeout for each request. The default is 0 which disables
 timeouts.
+
 ### report
 ````
-$ stress report -h
+➜ stress git:(master) ✗ stress report -h
 Usage of stress report:
   -input="stdin": Input files (comma separated)
   -output="stdout": Output file
@@ -203,11 +196,12 @@ out.
 Input a different number on the bottom left corner input field
 to change the moving average window size (in data points).
 
-![Plot](https://dl.dropboxusercontent.com/u/83217940/plot.png)
+![Plot](http://ww1.sinaimg.cn/large/4c422e03tw1egjnqkopjwj20lv0hjdhs.jpg)
 
 
 ## Usage (Library)
-```go
+
+````
 package main
 
 import (
@@ -218,15 +212,22 @@ import (
 
 func main() {
   targets, _ := stress.NewTargets([]string{"GET http://localhost:9100/"})
-  rate := uint64(100) // per second
+  rate := uint64(100) //per second
   duration := 4 * time.Second
+  concurrency := uint64(20)
+  number := uint64(1000)
 
-  results := stress.Attack(targets, rate, duration)
+  results := stress.AttackRate(targets, rate, duration)
   metrics := stress.NewMetrics(results)
 
   fmt.Printf("Mean latency: %s", metrics.Latencies.Mean)
+  
+  results = stress.AttackConcy(targets, concurrency, number)
+  metrics = stress.NewMetrics(results)
+
+  fmt.Printf("Mean latency: %s", metrics.Latencies.Mean)
 }
-```
+````
 
 #### Limitations
 There will be an upper bound of the supported `rate` which varies on the

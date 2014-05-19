@@ -27,9 +27,8 @@ type Target struct {
 func (t *Target) Request() (*http.Request, error) {
 	var req *http.Request
 	var err error
-	if t.File != "" {
+	if t.Method == "POST" && t.File != "" {
 		if strings.Contains(t.File, "form") {
-			//buf := new(bytes.Buffer) // caveat IMO dont use this for large files, \
 			buf := &bytes.Buffer{}
 			w := multipart.NewWriter(buf)
 			kv := strings.Split(t.File, ":")

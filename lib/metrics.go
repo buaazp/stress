@@ -54,7 +54,7 @@ func NewMetrics(results []Result) *Metrics {
 		if result.Latency > m.Latencies.Max {
 			m.Latencies.Max = result.Latency
 		}
-		if result.Code >= 200 && result.Code < 300 {
+		if result.Code >= 200 && result.Code < 250 {
 			totalSuccess++
 		}
 		if result.Error != "" {

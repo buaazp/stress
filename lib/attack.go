@@ -1,10 +1,13 @@
 package stress
 
 import (
+	"crypto/md5"
 	"crypto/tls"
+	"encoding/hex"
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"strings"
 	"sync/atomic"
 	"time"
 )
@@ -81,6 +84,28 @@ func (a *Attacker) hit(tgt Target) (res Result) {
 		}
 	} else {
 		res.BytesIn = uint64(len(body))
+		if strings.Contains(tgt.File, "md5") {
+			//fmt.Printf("checking [%s]\n", tgt.File)
+			kv := strings.Split(tgt.File, ":")
+			/*
+				for k, v := range kv {
+					fmt.Printf("[%d]: %s\n", k, v)
+				}
+			*/
+			if len(kv) == 2 {
+				if kv[1] != "" && len(kv[1]) == 32 {
+					//fmt.Println("checking [%s]\n", kv[1])
+					h := md5.New()
+					h.Write(body)
+					rsp_md5 := hex.EncodeToString(h.Sum(nil))
+					if rsp_md5 != kv[1] {
+						//fmt.Println("md5 not match!")
+						res.Code = 250
+						res.Error = fmt.Sprintf("%s %s: MD5 not matced", tgt.Method, tgt.URL)
+					}
+				}
+			}
+		}
 	}
 
 	return res
@@ -152,6 +177,28 @@ func (a *Attacker) shoot(tgts Targets) Results {
 			}
 		} else {
 			res.BytesIn = uint64(len(body))
+			if strings.Contains(tgt.File, "md5") {
+				//fmt.Printf("checking [%s]\n", tgt.File)
+				kv := strings.Split(tgt.File, ":")
+				/*
+					for k, v := range kv {
+						fmt.Printf("[%d]: %s\n", k, v)
+					}
+				*/
+				if len(kv) == 2 {
+					if kv[1] != "" && len(kv[1]) == 32 {
+						//fmt.Println("checking [%s]\n", kv[1])
+						h := md5.New()
+						h.Write(body)
+						rsp_md5 := hex.EncodeToString(h.Sum(nil))
+						if rsp_md5 != kv[1] {
+							//fmt.Println("md5 not match!")
+							res.Code = 250
+							res.Error = fmt.Sprintf("%s %s: MD5 not matced", tgt.Method, tgt.URL)
+						}
+					}
+				}
+			}
 		}
 
 		results = append(results, res)
