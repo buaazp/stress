@@ -19,7 +19,7 @@ type Target struct {
 	URL    string
 	Body   []byte
 	File   string
-	Header http.Header
+	Header headers
 }
 
 // Request creates an *http.Request out of Target and returns it along with an
@@ -83,8 +83,11 @@ func (t *Target) Request() (*http.Request, error) {
 		return nil, err
 	}
 	for k, vs := range t.Header {
-		req.Header[k] = make([]string, len(vs))
-		copy(req.Header[k], vs)
+		req.Header.Set(k, vs)
+		/*
+			req.Header[k] = make([]string, len(vs))
+			copy(req.Header[k], vs)
+		*/
 	}
 	req.Header.Set("User-Agent", "stress 1.0")
 	if host := req.Header.Get("Host"); host != "" {
@@ -116,15 +119,22 @@ func NewTargetsFrom(source io.Reader, body []byte, header http.Header) (Targets,
 	return NewTargets(lines, body, header)
 }
 
+type headers map[string]string
+
 // NewTargets instantiates Targets from a slice of strings.
 // It sets the passed body and http.Header on all targets.
 func NewTargets(lines []string, body []byte, header http.Header) (Targets, error) {
 	var targets Targets
-	new_header := header
 	for _, line := range lines {
 		ps := strings.Split(line, " ")
 		argc := len(ps)
 		if argc >= 2 {
+			new_header := headers{}
+			for k, v := range header {
+				for _, vv := range v {
+					new_header[k] = vv
+				}
+			}
 			i := 0
 			method := ps[i]
 			i++
@@ -134,7 +144,7 @@ func NewTargets(lines []string, body []byte, header http.Header) (Targets, error
 					if len(kv) != 2 {
 						continue
 					} else {
-						new_header.Add(kv[0], kv[1])
+						new_header[kv[0]] = kv[1]
 					}
 				}
 			}

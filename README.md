@@ -5,7 +5,7 @@ A test tool to send random http GET/POST requests to server.
 Fork from [Vegeta](https://github.com/tsenart/vegeta).
 
 Stress is a versatile HTTP load testing tool built out of need to drill
-HTTP services with a constant request rate.
+HTTP services with a constant request rate or concurrency level.
 It can be used both as a command line utility and a library.
 
 ## Install
