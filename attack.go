@@ -125,11 +125,15 @@ func attack(opts *attackOpts) error {
 		)
 		results = attacker.AttackRate(targets, opts.rate, opts.duration)
 	} else if opts.concurrency != 0 {
+		concurrency := opts.concurrency
+		if opts.concurrency > opts.number {
+			concurrency = opts.number
+		}
 		log.Printf(
 			"Stress is attacking %d targets in %s order and %d concurrency level for %d times...\n",
 			len(targets),
 			opts.ordering,
-			opts.concurrency,
+			concurrency,
 			opts.number,
 		)
 		results = attacker.AttackConcy(targets, opts.concurrency, opts.number)

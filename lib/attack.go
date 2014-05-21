@@ -133,6 +133,10 @@ func (a Attacker) AttackConcy(tgts Targets, concurrency uint64, number uint64) R
 	retsc := make(chan Results)
 	atomic.StoreInt64(&remain, int64(number))
 
+	if concurrency > number {
+		concurrency = number
+	}
+
 	var i uint64
 	for i = 0; i < concurrency; i++ {
 		go func(tgts Targets) { retsc <- a.shoot(tgts) }(tgts)
