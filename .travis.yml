@@ -9,6 +9,6 @@ before_script:
   - env | sort
 
 script:
-  - go get
-  - go build
+  - go get "github.com/buaazp/stress"
+  - go build "github.com/buaazp/stress"
   - go test -v
