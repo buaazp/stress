@@ -6,6 +6,7 @@ import (
 	"encoding/hex"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"strings"
 	"sync/atomic"
@@ -79,33 +80,40 @@ func (a *Attacker) hit(tgt Target) (res Result) {
 	res.BytesOut = uint64(req.ContentLength)
 	res.Code = uint16(r.StatusCode)
 	if body, err := ioutil.ReadAll(r.Body); err != nil {
-		if res.Code < 200 || res.Code >= 300 {
-			res.Error = string(body)
+		if res.Code >= 300 || res.Code < 200 {
+			res.Error = fmt.Sprintf("%s %s: %s", tgt.Method, tgt.URL, r.Status)
 		}
 	} else {
 		res.BytesIn = uint64(len(body))
-		if strings.Contains(tgt.File, "md5") {
-			//fmt.Printf("checking [%s]\n", tgt.File)
-			kv := strings.Split(tgt.File, ":")
-			/*
-				for k, v := range kv {
-					fmt.Printf("[%d]: %s\n", k, v)
-				}
-			*/
-			if len(kv) == 2 {
-				if kv[1] != "" && len(kv[1]) == 32 {
-					//fmt.Println("checking [%s]\n", kv[1])
-					h := md5.New()
-					h.Write(body)
-					rsp_md5 := hex.EncodeToString(h.Sum(nil))
-					if rsp_md5 != kv[1] {
-						//fmt.Println("md5 not match!")
-						res.Code = 250
-						res.Error = fmt.Sprintf("%s %s: MD5 not matced", tgt.Method, tgt.URL)
+		if res.Code >= 300 || res.Code < 200 {
+			res.Error = fmt.Sprintf("%s %s: %s", tgt.Method, tgt.URL, r.Status)
+		} else {
+			if strings.Contains(tgt.File, "md5") {
+				//fmt.Printf("checking [%s]\n", tgt.File)
+				kv := strings.Split(tgt.File, ":")
+				/*
+					for k, v := range kv {
+						fmt.Printf("[%d]: %s\n", k, v)
+					}
+				*/
+				if len(kv) == 2 {
+					if kv[1] != "" && len(kv[1]) == 32 {
+						//fmt.Println("checking [%s]\n", kv[1])
+						h := md5.New()
+						h.Write(body)
+						rsp_md5 := hex.EncodeToString(h.Sum(nil))
+						if rsp_md5 != kv[1] {
+							//fmt.Println("md5 not match!")
+							res.Code = 250
+							res.Error = fmt.Sprintf("%s %s: MD5 not matced", tgt.Method, tgt.URL)
+						}
 					}
 				}
 			}
 		}
+	}
+	if res.Code >= 250 || res.Code < 200 {
+		log.Printf("%s\n", res.Error)
 	}
 
 	return res
@@ -176,33 +184,40 @@ func (a *Attacker) shoot(tgts Targets) Results {
 		res.BytesOut = uint64(req.ContentLength)
 		res.Code = uint16(r.StatusCode)
 		if body, err := ioutil.ReadAll(r.Body); err != nil {
-			if res.Code < 200 || res.Code >= 300 {
-				res.Error = string(body)
+			if res.Code >= 300 || res.Code < 200 {
+				res.Error = fmt.Sprintf("%s %s: %s", tgt.Method, tgt.URL, r.Status)
 			}
 		} else {
 			res.BytesIn = uint64(len(body))
-			if strings.Contains(tgt.File, "md5") {
-				//fmt.Printf("checking [%s]\n", tgt.File)
-				kv := strings.Split(tgt.File, ":")
-				/*
-					for k, v := range kv {
-						fmt.Printf("[%d]: %s\n", k, v)
-					}
-				*/
-				if len(kv) == 2 {
-					if kv[1] != "" && len(kv[1]) == 32 {
-						//fmt.Println("checking [%s]\n", kv[1])
-						h := md5.New()
-						h.Write(body)
-						rsp_md5 := hex.EncodeToString(h.Sum(nil))
-						if rsp_md5 != kv[1] {
-							//fmt.Println("md5 not match!")
-							res.Code = 250
-							res.Error = fmt.Sprintf("%s %s: MD5 not matced", tgt.Method, tgt.URL)
+			if res.Code >= 300 || res.Code < 200 {
+				res.Error = fmt.Sprintf("%s %s: %s", tgt.Method, tgt.URL, r.Status)
+			} else {
+				if strings.Contains(tgt.File, "md5") {
+					//fmt.Printf("checking [%s]\n", tgt.File)
+					kv := strings.Split(tgt.File, ":")
+					/*
+						for k, v := range kv {
+							fmt.Printf("[%d]: %s\n", k, v)
+						}
+					*/
+					if len(kv) == 2 {
+						if kv[1] != "" && len(kv[1]) == 32 {
+							//fmt.Println("checking [%s]\n", kv[1])
+							h := md5.New()
+							h.Write(body)
+							rsp_md5 := hex.EncodeToString(h.Sum(nil))
+							if rsp_md5 != kv[1] {
+								//fmt.Println("md5 not match!")
+								res.Code = 250
+								res.Error = fmt.Sprintf("%s %s: MD5 not matced", tgt.Method, tgt.URL)
+							}
 						}
 					}
 				}
 			}
+		}
+		if res.Code >= 250 || res.Code < 200 {
+			log.Printf("%s\n", res.Error)
 		}
 
 		results = append(results, res)
