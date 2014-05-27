@@ -5,8 +5,10 @@ go: 1.2
 install: true
 
 before_script:
+  - export GOPATH="$(pwd):$GOPATH"
   - env | sort
 
 script:
+  - go get
   - go build
   - go test -v
