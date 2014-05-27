@@ -12,6 +12,7 @@ Author: [@招牌疯子](http://weibo.com/819880808)
 Contact me: zp@buaa.us  
 
 [![Build Status](https://travis-ci.org/buaazp/stress.svg?branch=master)](https://travis-ci.org/buaazp/stress)
+[![Build Status](https://drone.io/github.com/buaazp/stress/status.png)](https://drone.io/github.com/buaazp/stress/latest)
 [![GoDoc](https://godoc.org/github.com/buaazp/stress?status.png)](https://godoc.org/github.com/buaazp/stress)  
 
 ## Install
