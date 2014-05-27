@@ -8,6 +8,11 @@ Stress is a versatile HTTP load testing tool built out of need to drill
 HTTP services with a constant request rate or concurrency level.
 It can be used both as a command line utility and a library.
 
+Author: [@招牌疯子](http://weibo.com/819880808)  
+Contact me: zp@buaa.us  
+
+[![GoDoc](https://godoc.org/github.com/buaazp/stress?status.png)](https://godoc.org/github.com/buaazp/stress)  
+
 ## Install
 ### Pre-compiled executables
 Get them [here](https://github.com/buaazp/stress/releases).
