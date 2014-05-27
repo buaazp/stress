@@ -8,6 +8,5 @@ before_script:
   - env | sort
 
 script:
-  - go get
   - go build
   - go test -v
