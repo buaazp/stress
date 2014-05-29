@@ -33,7 +33,7 @@ stress拥有vegeta的全部功能，同时增加了一些用起来更加顺手�
 	````
 stress attack -header="client:iPhone5S" -targets=down.txt -c=40 -n=100
 	````
-	  
+	
 	局部header只针对单条测试请求生效，设定方法是在METHOD之后直接写入KV对即可，示例：
 	
 	````
@@ -47,6 +47,7 @@ GET client:iPhone5S resize-type:square http://127.0.0.1:8088/6xxkqpcm7j20b40e7my
 	````
 GET http://127.0.0.1:4869/5f189d8ec57f5a5a0d3dcba47fa797e2 md5:5f189d8ec57f5a5a0d3dcba47fa797e3
 	````
+	
 	如果在MD5校验中失败，该请求的结果会被标记为一个特殊的结果码`250`，stress会认为结果码为`250`的case为MD5校验失败。
 
 
@@ -57,18 +58,18 @@ GET http://127.0.0.1:4869/5f189d8ec57f5a5a0d3dcba47fa797e2 md5:5f189d8ec57f5a5a0
 	````
 POST http://127.0.0.1:4869/ password.txt
 	````
+	
 	如果要以form表单形式上传文件，则在文件名之前加`form`关键字即可：
 	
 	````
 POST http://127.0.0.1:4869/ form:5f189.jpeg
 	````
+	
 	如果需要设定form表单中的文件名关键字（默认为filename，具体内容在RFC1867协议中），可以这样构造：
 		
 	````
 POST http://127.0.0.1:4869/ form:yourfilename:5f189.jpeg
 	````
-	 
-	
 	
 - 设定测试请求来源
 
@@ -77,6 +78,7 @@ POST http://127.0.0.1:4869/ form:yourfilename:5f189.jpeg
 	````
 echo "GET http://127.0.0.1:8088/6xxkqpcm7j20b40e7myz.jpg" | stress attack  -c=30 -n=1000
 	````
+	
 	也可以将一系列的请求写在文件中，stress通过`-targets`参数打开目标文件进行测试。请求文件`down2.txt`示例：
 	
 	````
@@ -85,6 +87,7 @@ POST http://127.0.0.1:4869/ form:filename:5f189.jpeg
 GET http://127.0.0.1:4869/5f189d8ec57f5a5a0d3dcba47fa797e2 md5:5f189d8ec57f5a5a0d3dcba47fa797e3
 ...
 	````
+	
 	请求文件没有大小限制，构造成百上千条请求进行测试毫无压力。然后在stress attack命令中指定该文件即可开始测试：
 	
 	````
@@ -104,6 +107,7 @@ stress attack -targets=down2.txt -c=40 -n=10000 -ordering="sequential"
 	````
 stress report -input=result.json,result2.json,result3.json -output=output.json -reporter=json
 	````
+	
 	`-reporter`支持三种格式的输出`[text, json, plot]`，满足不同的需求。
 	
 - 多核支持
