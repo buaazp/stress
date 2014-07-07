@@ -31,9 +31,13 @@ func TestEncoding(t *testing.T) {
 	}
 
 	for i, result := range results {
-		if decoded[i].Timestamp != result.Timestamp {
-			t.Fatalf("Expected result with timestamp: %s, got: %s", result.Timestamp, decoded[i].Timestamp)
+		// t.Logf("Expected result with BytesOut: %d, got: %d", result.BytesOut, decoded[i].BytesOut)
+		if decoded[i].BytesOut != result.BytesOut {
+			t.Fatalf("Expected result with BytesOut: %d, got: %d", result.BytesOut, decoded[i].BytesOut)
 		}
+		// if decoded[i].Timestamp != result.Timestamp {
+		// 	t.Fatalf("Expected result with timestamp: %s, got: %s", result.Timestamp, decoded[i].Timestamp)
+		// }
 	}
 }
 
