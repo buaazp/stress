@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"net"
 	"net/http"
 	"os"
 	"strings"
@@ -16,7 +17,10 @@ import (
 
 func attackCmd() command {
 	fs := flag.NewFlagSet("stress attack", flag.ExitOnError)
-	opts := &attackOpts{headers: headers{http.Header{}}}
+	opts := &attackOpts{
+		headers: headers{http.Header{}},
+		laddr:   localAddr{&stress.DefaultLocalAddr},
+	}
 
 	fs.StringVar(&opts.targetsf, "targets", "stdin", "Targets file")
 	fs.StringVar(&opts.outputf, "output", "result.json", "Output file")
@@ -29,6 +33,7 @@ func attackCmd() command {
 	fs.Uint64Var(&opts.number, "n", 1000, "Requests number")
 	fs.IntVar(&opts.redirects, "redirects", 10, "Number of redirects to follow")
 	fs.Var(&opts.headers, "header", "Request header")
+	fs.Var(&opts.laddr, "laddr", "Local IP address")
 
 	return command{fs, func(args []string) error {
 		fs.Parse(args)
@@ -49,6 +54,7 @@ type attackOpts struct {
 	number      uint64
 	redirects   int
 	headers     headers
+	laddr       localAddr
 }
 
 // attack validates the attack arguments, sets up the
@@ -107,12 +113,7 @@ func attack(opts *attackOpts) error {
 	}
 	defer out.Close()
 
-	attacker := stress.NewAttacker()
-	attacker.SetRedirects(opts.redirects)
-
-	if opts.timeout > 0 {
-		attacker.SetTimeout(opts.timeout)
-	}
+	attacker := stress.NewAttacker(opts.redirects, opts.timeout, *opts.laddr.IPAddr)
 
 	var results stress.Results
 	if opts.rate != 0 {
@@ -192,4 +193,12 @@ func (h headers) Set(value string) error {
 	}
 	h.Add(key, val)
 	return nil
+}
+
+// localAddr implements the Flag interface for parsing net.IPAddr
+type localAddr struct{ *net.IPAddr }
+
+func (ip *localAddr) Set(value string) (err error) {
+	ip.IPAddr, err = net.ResolveIPAddr("ip", value)
+	return
 }

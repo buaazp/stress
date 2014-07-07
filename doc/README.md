@@ -30,93 +30,95 @@ stress拥有vegeta的全部功能，同时增加了一些用起来更加顺手�
 	有两种方式进行自定义header：全局header和局部header，两者可同时生效。  
 	全局header在stress attack命令后加参数`-header="host:www.baidu.com"`进行设定，一旦设定之后本次测试中的所有请求都会带有此header。示例：
 	
-	````
+```
 stress attack -header="client:iPhone5S" -targets=down.txt -c=40 -n=100
-	````
+```
+
+局部header只针对单条测试请求生效，设定方法是在METHOD之后直接写入KV对即可，示例：
 	
-	局部header只针对单条测试请求生效，设定方法是在METHOD之后直接写入KV对即可，示例：
-	
-	````
+```
 GET client:iPhone5S resize-type:square http://127.0.0.1:8088/6xxkqpcm7j20b40e7myz.jpg
-	````
+```
 	
 - GET请求支持MD5校验
 
 	在很多测试场景中，我们不能只依靠服务器返回的HTTP status code来判断请求是否正确，比如要测试图片裁剪，虽然返回200 OK了，但是图片不对，依然需要标记为错误，因此stress增加了请求结束后的MD5校验功能，使用方法是在URL之后设定以md5:开头的预期MD5值，示例：
 	
-	````
+```
 GET http://127.0.0.1:4869/5f189d8ec57f5a5a0d3dcba47fa797e2 md5:5f189d8ec57f5a5a0d3dcba47fa797e3
-	````
+```
 	
-	如果在MD5校验中失败，该请求的结果会被标记为一个特殊的结果码`250`，stress会认为结果码为`250`的case为MD5校验失败。
+如果在MD5校验中失败，该请求的结果会被标记为一个特殊的结果码`250`，stress会认为结果码为`250`的case为MD5校验失败。
 
 
 - POST请求支持以 binary/mutipart-form 形式上传文件
 
 	如果要测试POST请求发送数据，stress支持在URL之后设定文件名，例如：
 	
-	````
+```
 POST http://127.0.0.1:4869/ password.txt
-	````
+```
 	
-	如果要以form表单形式上传文件，则在文件名之前加`form`关键字即可：
+如果要以form表单形式上传文件，则在文件名之前加`form`关键字即可：
 	
-	````
+```
 POST http://127.0.0.1:4869/ form:5f189.jpeg
-	````
+```
 	
-	如果需要设定form表单中的文件名关键字（默认为filename，具体内容在RFC1867协议中），可以这样构造：
+如果需要设定form表单中的文件名关键字（默认为filename，具体内容在RFC1867协议中），可以这样构造：
 		
-	````
+```
 POST http://127.0.0.1:4869/ form:yourfilename:5f189.jpeg
-	````
+```
 	
 - 设定测试请求来源
 
 	默认来自标准输入stdin，因此单条测试请求可以直接通过管道输入给stress，例如：  
 	
-	````
+```
 echo "GET http://127.0.0.1:8088/6xxkqpcm7j20b40e7myz.jpg" | stress attack  -c=30 -n=1000
-	````
+```
 	
-	也可以将一系列的请求写在文件中，stress通过`-targets`参数打开目标文件进行测试。请求文件`down2.txt`示例：
+也可以将一系列的请求写在文件中，stress通过`-targets`参数打开目标文件进行测试。请求文件`down2.txt`示例：
 	
-	````
-GET HOST:ww4.sinaimg.cn resize-type:wap320 http://127.0.0.1:8088/large/a13a0128jw1e6xxkqpcm7j20b40e7myz.jpg md5:ee08f10750475ad209a822ffe24f4e78
+```
+GET HOST:ww4.sinaimg.cn resize-type:wap320 
+http://127.0.0.1:8088/large/a13a0128jw1e6xxkqpcm7j20b40e7myz.jpg
+md5:ee08f10750475ad209a822ffe24f4e78
 POST http://127.0.0.1:4869/ form:filename:5f189.jpeg
 GET http://127.0.0.1:4869/5f189d8ec57f5a5a0d3dcba47fa797e2 md5:5f189d8ec57f5a5a0d3dcba47fa797e3
 ...
-	````
+```
 	
-	请求文件没有大小限制，构造成百上千条请求进行测试毫无压力。然后在stress attack命令中指定该文件即可开始测试：
+请求文件没有大小限制，构造成百上千条请求进行测试毫无压力。然后在stress attack命令中指定该文件即可开始测试：
 	
-	````
+```
 stress attack -targets=down2.txt -c=40 -n=10000
-	````
+```
 	
-	target文件中的请求默认会以随机顺序进行测试，如有必要可以单独设定发送顺序为依次执行，加上`-ordering="sequential"`即可，示例：
+target文件中的请求默认会以随机顺序进行测试，如有必要可以单独设定发送顺序为依次执行，加上`-ordering="sequential"`即可，示例：
 	
-	````
+```
 stress attack -targets=down2.txt -c=40 -n=10000 -ordering="sequential"
-	````
+```
 	
 - report工具
 
 	stress attack工具是测试工具，stress report是结果输出工具。在每次attack测试结束之后，原始测试结果默认写入result.json文件中，当然你也可以通过增加`-output="result.json"`参数进行自定义。如果你保存了多次测试的数据，可以通过report工具来转换成更容易阅读的格式：
 	
-	````
+```
 stress report -input=result.json,result2.json,result3.json -output=output.json -reporter=json
-	````
+```
 	
-	`-reporter`支持三种格式的输出`[text, json, plot]`，满足不同的需求。
+`-reporter`支持三种格式的输出`[text, json, plot]`，满足不同的需求。
 	
 - 多核支持
 
 	为了更好地利用多核的优势，stress支持设定使用核心数，可使用的CPU核心越多，并发测试速度越快，示例如下：
 	
-	````
+```
 stress -cpus=4 attack -targets=down2.txt -c=100 -n=10000
-	````
+```
 
 #### 展望
 

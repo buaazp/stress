@@ -19,7 +19,7 @@ type Target struct {
 	URL    string
 	Body   []byte
 	File   string
-	Header headers
+	Header http.Header
 }
 
 // Request creates an *http.Request out of Target and returns it along with an
@@ -72,8 +72,8 @@ func (t *Target) Request() (*http.Request, error) {
 				return nil, fmt.Errorf("Post file: "+"(%s): %s", t.File, err)
 			}
 			req, err = http.NewRequest(t.Method, t.URL, bytes.NewBuffer(body))
-			content_len := len(body)
-			req.Header.Set("Content-Length", fmt.Sprint(content_len))
+			contentLen := len(body)
+			req.Header.Set("Content-Length", fmt.Sprint(contentLen))
 		}
 	} else {
 		req, err = http.NewRequest(t.Method, t.URL, bytes.NewBuffer(t.Body))
@@ -83,16 +83,22 @@ func (t *Target) Request() (*http.Request, error) {
 		return nil, err
 	}
 	for k, vs := range t.Header {
-		req.Header.Set(k, vs)
-		/*
-			req.Header[k] = make([]string, len(vs))
-			copy(req.Header[k], vs)
-		*/
+		req.Header[k] = make([]string, len(vs))
+		copy(req.Header[k], vs)
 	}
 	req.Header.Set("User-Agent", "stress 1.0")
 	if host := req.Header.Get("Host"); host != "" {
 		req.Host = host
 	}
+
+	// fmt.Printf("--------------t.Header:\n")
+	// for k, vs := range t.Header {
+	// 	for _, vv := range vs {
+	// 		fmt.Printf("%s: %s\n", k, vv)
+	// 	}
+	// }
+	// fmt.Printf("t.Header---------------\n")
+
 	return req, nil
 }
 
@@ -129,11 +135,10 @@ func NewTargets(lines []string, body []byte, header http.Header) (Targets, error
 		ps := strings.Split(line, " ")
 		argc := len(ps)
 		if argc >= 2 {
-			new_header := headers{}
-			for k, v := range header {
-				for _, vv := range v {
-					new_header[k] = vv
-				}
+			newHeader := http.Header{}
+			for k, vs := range header {
+				newHeader[k] = make([]string, len(vs))
+				copy(newHeader[k], vs)
 			}
 			i := 0
 			method := ps[i]
@@ -144,11 +149,11 @@ func NewTargets(lines []string, body []byte, header http.Header) (Targets, error
 					if len(kv) != 2 {
 						continue
 					} else {
-						new_header[kv[0]] = kv[1]
+						newHeader.Set(kv[0], kv[1])
 					}
 				}
 			}
-			var url, post_file string
+			var url, postFile string
 			if i < argc {
 				url = ps[i]
 			} else {
@@ -156,12 +161,12 @@ func NewTargets(lines []string, body []byte, header http.Header) (Targets, error
 			}
 			i++
 			if i < argc {
-				post_file = ps[i]
+				postFile = ps[i]
 			} else {
-				post_file = ""
+				postFile = ""
 			}
 			if url != "" {
-				targets = append(targets, Target{Method: method, URL: url, File: post_file, Body: body, Header: new_header})
+				targets = append(targets, Target{Method: method, URL: url, File: postFile, Body: body, Header: newHeader})
 			}
 		} else {
 			return nil, fmt.Errorf("Invalid request format: `%s`", line)

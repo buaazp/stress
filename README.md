@@ -58,6 +58,7 @@ Usage of stress attack:
   -c=10: Concurrency level
   -duration=10s: Duration of the test
   -header=: Request header
+  -laddr=0.0.0.0: Local IP address
   -n=1000: Requests number
   -ordering="random": Attack ordering [sequential, random]
   -output="result.json": Output file
@@ -104,15 +105,17 @@ GET http://127.0.0.1:4869/a.jpeg md5:5f189d8ec57f5a5a0d3dcba47fa797e2
 Specifies a request header to be used in all targets defined.
 You can specify as many as needed by repeating the flag.
 
+#### -laddr
+Specifies the local IP address to be used.
+
 #### -body
 Specifies the file whose content will be set as the body of every request.
 
 #### -ordering
 Specifies the ordering of target attack. The default is `random` and
-it will randomly pick one of the targets per request without ever choosing
-that target again.
-The other option is `sequential` and it does what you would expect it to
-do.
+it will randomly pick one of the targets per request.
+The other option is `sequential` and it round-robins through the list of
+targets for each request.
 
 #### -output
 Specifies the output file to which the binary results will be written
@@ -256,7 +259,7 @@ Just pass a new number as the argument to change it.
 ## Licence
 
 Stress is under BSD license which is in the license file.  
-But stress is forked form [Vegeta](https://github.com/tsenart/vegeta). The auther of vegeta is [tsenart](https://github.com/tsenart) and vegeta is under MIT license. Thanks for his work.  
+But stress is forked form [Vegeta](https://github.com/tsenart/vegeta). The author of vegeta is [tsenart](https://github.com/tsenart) and vegeta is under MIT license. Thanks for his work.  
 
 ```
 The MIT License (MIT)
