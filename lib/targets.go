@@ -144,7 +144,7 @@ func NewTargets(lines []string, body []byte, header http.Header) (Targets, error
 			method := ps[i]
 			i++
 			if strings.Contains(ps[i], "http") == false {
-				for ; strings.Contains(ps[i], "http") == false; i++ {
+				for ; i < len(ps) && strings.Contains(ps[i], "http") == false; i++ {
 					kv := strings.Split(ps[i], ":")
 					if len(kv) != 2 {
 						continue
