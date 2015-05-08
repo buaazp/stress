@@ -97,6 +97,9 @@ func attack(opts *attackOpts) error {
 	if err != nil {
 		return fmt.Errorf(errTargetsFilePrefix+"(%s): %s", opts.targetsf, err)
 	}
+	if len(targets) == 0 {
+		return fmt.Errorf(errTargetsFilePrefix+" : is empty")
+	}
 
 	switch opts.ordering {
 	case "random":
