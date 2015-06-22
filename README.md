@@ -1,5 +1,4 @@
-stress
-======
+# stress
 
 A test tool to send random http GET/POST requests to server.
 Fork from [Vegeta](https://github.com/tsenart/vegeta).
@@ -11,8 +10,7 @@ It can be used both as a command line utility and a library.
 Author: [@招牌疯子](http://weibo.com/819880808)  
 Contact me: zp@buaa.us  
 
-[![Build Status](https://travis-ci.org/buaazp/stress.svg?branch=master)](https://travis-ci.org/buaazp/stress)
-[![GoDoc](https://godoc.org/github.com/buaazp/stress?status.png)](https://godoc.org/github.com/buaazp/stress)  
+[![Build Status](https://travis-ci.org/buaazp/stress.svg?branch=master)](https://travis-ci.org/buaazp/stress) [![wercker status](https://app.wercker.com/status/5e44af92a3de33c3ccc4dfd385405887/s "wercker status")](https://app.wercker.com/project/bykey/5e44af92a3de33c3ccc4dfd385405887) [![GoDoc](https://godoc.org/github.com/buaazp/stress?status.png)](https://godoc.org/github.com/buaazp/stress)  
 
 ## Install
 ### Pre-compiled executables
