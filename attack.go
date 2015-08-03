@@ -140,7 +140,7 @@ func attack(opts *attackOpts) error {
 			concurrency,
 			opts.number,
 		)
-		results = attacker.AttackConcy(targets, opts.concurrency, opts.number)
+		results = attacker.AttackConcy(targets, concurrency, opts.number)
 	}
 
 	log.Printf("Done! Writing results to '%s'...", opts.outputf)
