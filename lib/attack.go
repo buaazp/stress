@@ -152,7 +152,7 @@ func (a *Attacker) hit(tgt Target) (res Result) {
 			}
 		}
 	}
-
+	r.Body.Close()
 	if res.Code >= 250 || res.Code < 200 {
 		log.Printf("%s\n", res.Error)
 	}
@@ -229,6 +229,7 @@ func (a *Attacker) shoot(tgts Targets) Results {
 
 		res.Latency = time.Since(res.Timestamp)
 		res.BytesIn = uint64(len(body))
+		r.Body.Close()
 		if res.Code >= 300 || res.Code < 200 {
 			res.Error = fmt.Sprintf("%s %s: %s", tgt.Method, tgt.URL, r.Status)
 		} else {
